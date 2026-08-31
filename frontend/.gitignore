@@ -14,6 +14,8 @@
 .env
 .env.*
 !.env.example
+# Committed on purpose: contains no secrets, only same-origin API base + CI flag.
+!.env.production
 
 npm-debug.log*
 yarn-debug.log*

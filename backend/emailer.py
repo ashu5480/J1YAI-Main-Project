@@ -9,9 +9,15 @@ from fastapi import HTTPException
 
 logger = logging.getLogger(__name__)
 
-EMAIL_BASE_URL = "https://integrations.emergentagent.com"
-EMAIL_KEY = os.environ["EMERGENT_EMAIL_KEY"]
-EMAIL_FROM_NAME = os.environ["EMAIL_FROM_NAME"]
+# ---- Resend configuration ----
+# RESEND_API_KEY: your Resend API key (starts with "re_").
+# EMAIL_FROM: the verified sender, e.g. "J1YAI <onboarding@resend.dev>" or
+#             "J1YAI <hello@yourdomain.com>" once your domain is verified.
+RESEND_API_URL = "https://api.resend.com/emails"
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
+EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "J1YAI")
+# Prefer an explicit EMAIL_FROM; otherwise fall back to Resend's shared test sender.
+EMAIL_FROM = os.environ.get("EMAIL_FROM") or f"{EMAIL_FROM_NAME} <onboarding@resend.dev>"
 EMAIL_REPLY_TO = os.environ.get("EMAIL_REPLY_TO")
 
 _SHORTENERS = ("bit.ly", "tinyurl.com", "t.co", "is.gd", "cutt.ly", "goo.gl", "rebrand.ly")
@@ -88,15 +94,35 @@ def _assert_safe_email(subject: str, html: str) -> None:
 
 
 async def send_email(*, to: str, subject: str, html: str, reply_to: str | None = None) -> str | None:
+    """Send a transactional email through Resend.
+
+    Keeps the original safety scan (no forms, no credential asks, https-only
+    links, honest anchor text) before anything leaves the server.
+    """
     _assert_safe_email(subject, html)
-    payload = {"to": [to], "subject": subject, "html": html, "from_name": EMAIL_FROM_NAME}
-    if reply_to or EMAIL_REPLY_TO:
-        payload["contact_email"] = reply_to or EMAIL_REPLY_TO
+
+    if not RESEND_API_KEY:
+        logger.error("RESEND_API_KEY is not set; skipping email send")
+        raise HTTPException(status_code=500, detail="Email is not configured")
+
+    payload = {
+        "from": EMAIL_FROM,
+        "to": [to],
+        "subject": subject,
+        "html": html,
+    }
+    reply = reply_to or EMAIL_REPLY_TO
+    if reply:
+        payload["reply_to"] = reply
+
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             resp = await client.post(
-                f"{EMAIL_BASE_URL}/api/v1/email/send",
-                headers={"X-Email-Key": EMAIL_KEY},
+                RESEND_API_URL,
+                headers={
+                    "Authorization": f"Bearer {RESEND_API_KEY}",
+                    "Content-Type": "application/json",
+                },
                 json=payload,
             )
         resp.raise_for_status()

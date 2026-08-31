@@ -248,9 +248,18 @@ async def get_post(slug: str):
 
 # ---------- Auth routes ----------
 @api_router.post("/auth/login")
+def client_ip(request: Request) -> str:
+    # Behind Vercel's proxy, request.client.host is the proxy; the real client
+    # is the first entry of X-Forwarded-For.
+    fwd = request.headers.get("x-forwarded-for", "")
+    if fwd:
+        return fwd.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
 async def login(input: LoginIn, request: Request, response: Response):
     email = input.email.lower()
-    identifier = f"{request.client.host}:{email}"
+    identifier = f"{client_ip(request)}:{email}"
     attempt = await db.login_attempts.find_one({"identifier": identifier})
     if attempt and attempt.get("locked_until"):
         locked_until = datetime.fromisoformat(attempt["locked_until"])
@@ -344,13 +353,14 @@ async def delete_post(post_id: str, user=Depends(get_current_user)):
 # ---------- Project export (admin only) ----------
 EXPORT_EXCLUDE_DIRS = {"node_modules", "__pycache__", ".git", "build", "dist", ".next", ".pnpm-store"}
 
-BACKEND_ENV_EXAMPLE = """MONGO_URL="mongodb://localhost:27017"
+BACKEND_ENV_EXAMPLE = """MONGO_URL="mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority"
 DB_NAME="j1yai"
 FRONTEND_URL="http://localhost:3000"
 JWT_SECRET="generate-a-long-random-string-here"
 ADMIN_EMAIL="you@example.com"
 ADMIN_PASSWORD="change-me"
-EMERGENT_EMAIL_KEY=""
+RESEND_API_KEY="re_your_api_key"
+EMAIL_FROM="J1YAI <onboarding@resend.dev>"
 EMAIL_FROM_NAME="J1YAI"
 EMAIL_REPLY_TO="you@example.com"
 OWNER_EMAIL="you@example.com"
@@ -385,16 +395,19 @@ Or re-run scripts/seed_blogs.py and scripts/seed_blogs_batch2.py with API_URL po
 
 ## Notes
 - Real .env files are intentionally excluded (they contain secrets).
-- Email sending uses the Emergent integrations gateway (EMERGENT_EMAIL_KEY); outside Emergent, swap emailer.py for Resend/SMTP directly.
+- Email sending uses Resend (RESEND_API_KEY). Verify a sending domain in Resend to email arbitrary recipients; the shared onboarding@resend.dev sender only delivers to your own account address.
 """
 
 
 @api_router.get("/admin/export")
 async def export_project(user=Depends(get_current_user)):
+    # Source root is configurable; on Vercel the filesystem is read-only and the
+    # source tree may be absent, so this degrades to a data-only export.
+    project_root = Path(os.environ.get("PROJECT_ROOT", "/app"))
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w", zipfile.ZIP_DEFLATED) as zf:
         for folder in ["frontend", "backend", "scripts", "memory"]:
-            base = Path("/app") / folder
+            base = project_root / folder
             if not base.exists():
                 continue
             for path in sorted(base.rglob("*")):
@@ -402,7 +415,7 @@ async def export_project(user=Depends(get_current_user)):
                     continue
                 if set(path.parts) & EXPORT_EXCLUDE_DIRS or path.name == ".env":
                     continue
-                zf.write(path, str(path.relative_to("/app")))
+                zf.write(path, str(path.relative_to(project_root)))
         zf.writestr("backend/.env.example", BACKEND_ENV_EXAMPLE)
         zf.writestr("frontend/.env.example", FRONTEND_ENV_EXAMPLE)
         posts = await db.blog_posts.find({}, {"_id": 0}).to_list(1000)
