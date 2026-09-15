@@ -27,7 +27,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <a
-              href={`${process.env.REACT_APP_BACKEND_URL}/api/admin/export`}
+              href={`${process.env.REACT_APP_BACKEND_URL || ""}/api/admin/export`}
               data-testid="admin-export-button"
               className="inline-flex items-center gap-2 rounded-full border border-cyan-400/40 px-4 py-2 text-sm font-medium text-cyan-300 transition-colors hover:bg-cyan-400/10"
             >

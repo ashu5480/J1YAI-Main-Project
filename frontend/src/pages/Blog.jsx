@@ -6,7 +6,7 @@ import { SEO } from "@/components/layout/Layout";
 import CTASection from "@/components/CTASection";
 import { Reveal, SectionHeading } from "@/components/Reveal";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const formatDate = (iso) => new Date(iso).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 

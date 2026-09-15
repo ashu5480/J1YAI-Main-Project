@@ -7,7 +7,7 @@ import CTASection from "@/components/CTASection";
 import { Reveal } from "@/components/Reveal";
 import BlogContent from "@/components/BlogContent";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const BlogPost = () => {
   const { slug } = useParams();

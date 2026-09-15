@@ -4,7 +4,7 @@ import axios from "axios";
 import { Linkedin, Instagram, Github, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/layout/Navbar";
 
-const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
 const nav = [
   { to: "/services", label: "Services" },
