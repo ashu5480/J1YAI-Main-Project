@@ -7,8 +7,26 @@ const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 export const api = axios.create({ baseURL: API, withCredentials: true });
 
 let onUnauthorized = null;
+
+// If the backend is not deployed, static hosts (e.g. Vercel SPA fallback) answer
+// /api/* with index.html (HTTP 200, HTML) instead of JSON/401. Reject those so
+// auth + admin screens degrade gracefully instead of treating HTML as a user,
+// an inquiries list, etc.
 api.interceptors.response.use(
-  (res) => res,
+  (res) => {
+    const looksLikeHtml =
+      typeof res.data === "string" &&
+      /^\s*(<!doctype html|<html)/i.test(String(res.data).slice(0, 2048));
+    if (looksLikeHtml) {
+      const err = new Error("API unavailable (backend not deployed).");
+      err.response = {
+        status: 503,
+        data: { detail: "API unavailable (backend not deployed)." },
+      };
+      return Promise.reject(err);
+    }
+    return res;
+  },
   async (error) => {
     const original = error.config;
     if (error.response?.status === 401 && !original._retry && !original.url.includes("/auth/")) {
