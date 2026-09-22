@@ -261,6 +261,10 @@ async def create_contact_inquiry(input: ContactInquiryCreate):
 
     # ---------- 1) Notification to the official info@ mailbox ----------
     try:
+        logger.info(
+            f"Inquiry {inquiry.id}: attempting info@ notification email "
+            f"(type=info-alert, recipient={INFO_EMAIL})."
+        )
         await send_email(
             to=INFO_EMAIL,
             subject=f"New inquiry: {inq_safe(inquiry.project_type)} from {inq_safe(inquiry.name)}",
@@ -271,15 +275,26 @@ async def create_contact_inquiry(input: ContactInquiryCreate):
         logger.error(f"Info notification email failed for inquiry {inquiry.id}: {e}")
 
     # ---------- 2) Confirmation to the founder/submitter's email ----------
-    try:
-        await send_email(
-            to=inquiry.email,
-            subject=f"We received your project inquiry (Ref {inquiry.id[:8]})",
-            html=founder_confirmation_html(inquiry),
-            reply_to=INFO_EMAIL,
+    submitter_email = inquiry.email
+    if not submitter_email:
+        logger.warning(
+            f"Inquiry {inquiry.id}: no submitter email present, "
+            "founder confirmation email skipped."
         )
-    except Exception as e:
-        logger.error(f"Founder confirmation email failed for inquiry {inquiry.id}: {e}")
+    else:
+        try:
+            logger.info(
+                f"Inquiry {inquiry.id}: attempting founder confirmation email "
+                f"(type=founder-confirmation, recipient={submitter_email})."
+            )
+            await send_email(
+                to=submitter_email,
+                subject=f"We received your project inquiry (Ref {inquiry.id[:8]})",
+                html=founder_confirmation_html(inquiry),
+                reply_to=INFO_EMAIL,
+            )
+        except Exception as e:
+            logger.error(f"Founder confirmation email failed for inquiry {inquiry.id}: {e}")
 
     return {"success": True, "id": inquiry.id, "duplicate": False}
 
