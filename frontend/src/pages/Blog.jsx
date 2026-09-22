@@ -14,7 +14,9 @@ const Blog = () => {
   const [posts, setPosts] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API}/blog`).then(({ data }) => setPosts(data)).catch(() => setPosts([]));
+    // Guard: if the API returns non-JSON (e.g. mis-wired prod domain serving
+    // HTML), fall back to the honest empty state instead of crashing.
+    axios.get(`${API}/blog`).then(({ data }) => setPosts(Array.isArray(data) ? data : [])).catch(() => setPosts([]));
   }, []);
 
   return (

@@ -22,7 +22,7 @@ const Footer = () => {
   const [settings, setSettings] = useState(null);
 
   useEffect(() => {
-    axios.get(`${API}/settings`).then(({ data }) => setSettings(data)).catch(() => setSettings({}));
+    axios.get(`${API}/settings`).then(({ data }) => setSettings(data && typeof data === "object" && !Array.isArray(data) ? data : {})).catch(() => setSettings({}));
   }, []);
 
   const socials = [

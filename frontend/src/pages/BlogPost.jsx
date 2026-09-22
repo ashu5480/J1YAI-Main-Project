@@ -15,7 +15,15 @@ const BlogPost = () => {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    axios.get(`${API}/blog/${slug}`).then(({ data }) => setPost(data)).catch(() => setNotFound(true));
+    // Guard: only accept a real post object; anything else (HTML page, list,
+    // null) is treated as not-found instead of crashing on post.tags etc.
+    axios
+      .get(`${API}/blog/${slug}`)
+      .then(({ data }) => {
+        if (data && typeof data === "object" && !Array.isArray(data) && data.slug) setPost(data);
+        else setNotFound(true);
+      })
+      .catch(() => setNotFound(true));
   }, [slug]);
 
   if (notFound) {
