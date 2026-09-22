@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
 const FIELDS = [
-  { key: "contact_email", label: "Contact Email", placeholder: "you@j1yai.com" },
+  { key: "contact_email", label: "Contact Email", placeholder: "info@jiyaitech.com" },
   { key: "contact_phone", label: "Contact Phone", placeholder: "+91 70000 00000" },
   { key: "social_linkedin", label: "LinkedIn URL", placeholder: "https://www.linkedin.com/company/…" },
   { key: "social_instagram", label: "Instagram URL", placeholder: "https://www.instagram.com/…" },

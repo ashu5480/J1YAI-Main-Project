@@ -1,4 +1,4 @@
-import { Compass, Code2, Brain, Gauge, Rocket, Target, Lightbulb } from "lucide-react";
+import { Compass, Code2, Brain, Gauge, Rocket, Target, Lightbulb, Mail } from "lucide-react";
 import { SEO } from "@/components/layout/Layout";
 import CTASection from "@/components/CTASection";
 import { Reveal, SectionHeading } from "@/components/Reveal";
@@ -131,6 +131,15 @@ const About = () => (
                 <p className="mt-4 text-base leading-relaxed text-slate-400">
                   This is a studio built by a single founder who decided the best way to earn trust was to build his own product — FundrHub — before asking anyone else to invest in one.
                 </p>
+                <a
+                  href="mailto:founder@jiyaitech.com"
+                  data-testid="about-founder-email"
+                  aria-label="Email the founder: founder@jiyaitech.com"
+                  className="mt-6 inline-flex items-center gap-2.5 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-5 py-2.5 text-sm font-semibold text-cyan-300 transition-[background-color,border-color,transform] duration-200 hover:bg-cyan-400/20 hover:border-cyan-400/50 hover:-translate-y-0.5"
+                >
+                  <Mail className="h-4 w-4" />
+                  founder@jiyaitech.com
+                </a>
               </Reveal>
 
               <div className="mt-10 grid gap-4 sm:grid-cols-2" data-testid="about-founder-points">

@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PROJECT_TYPES, BUDGETS } from "@/data/content";
+import { PROJECT_TYPES, BUDGETS, TEAM_EMAILS } from "@/data/content";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,10 +91,28 @@ const Contact = () => {
                   </div>
                 ))}
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
-                  <p className="text-sm text-slate-400">Prefer email?</p>
-                  <a href="mailto:singhashu772@gmail.com" data-testid="contact-email-link" className="mt-1 block font-display text-lg font-semibold text-cyan-300 hover:text-cyan-200">
-                    singhashu772@gmail.com
-                  </a>
+                  <p className="text-sm text-slate-400">Email the team</p>
+                  <div className="mt-4 space-y-4">
+                    {TEAM_EMAILS.map((t) => (
+                      <a
+                        key={t.email}
+                        href={`mailto:${t.email}`}
+                        data-testid={t.primary ? "contact-email-link" : `contact-team-email-${t.id}`}
+                        aria-label={`${t.label}: ${t.email}`}
+                        className="group flex items-center gap-3.5"
+                      >
+                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/10 transition-colors duration-200 group-hover:border-cyan-400/50">
+                          <t.icon className="h-4 w-4 text-cyan-300" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500">{t.label}</span>
+                          <span className="block truncate font-display text-[15px] font-semibold text-cyan-300 transition-colors duration-200 group-hover:text-cyan-200">
+                            {t.email}
+                          </span>
+                        </span>
+                      </a>
+                    ))}
+                  </div>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
                   <p className="text-sm text-slate-400">Prefer to talk?</p>

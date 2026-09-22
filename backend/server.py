@@ -154,7 +154,9 @@ class BlogPost(BlogPostIn):
 
 
 DEFAULT_SETTINGS = {
-    "contact_email": OWNER_EMAIL,
+    # Public-facing contact mailbox shown on the website UI (info@jiyaitech.com).
+    # OWNER_EMAIL (env) remains the private notification target for inquiries.
+    "contact_email": "info@jiyaitech.com",
     "contact_phone": "+91 7042579843",
     "social_linkedin": "https://www.linkedin.com",
     "social_instagram": "https://www.instagram.com",

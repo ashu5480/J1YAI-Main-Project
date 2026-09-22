@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Linkedin, Instagram, Github, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/layout/Navbar";
+import { TEAM_EMAILS } from "@/data/content";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
@@ -39,6 +40,15 @@ const Footer = () => {
             <p className="mt-4 text-sm leading-relaxed text-slate-400">
               We build modern digital products powered by software and AI.
             </p>
+            <a
+              href={`mailto:${TEAM_EMAILS[0].email}`}
+              data-testid="footer-email"
+              aria-label={`Email the team: ${TEAM_EMAILS[0].email}`}
+              className="mt-5 block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
+            >
+              <span className="text-slate-500">Email · </span>
+              {TEAM_EMAILS[0].email}
+            </a>
             {settings?.contact_phone && (
               <a
                 href={`tel:${settings.contact_phone.replace(/[^+0-9]/g, "")}`}
