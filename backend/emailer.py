@@ -12,11 +12,16 @@ logger = logging.getLogger(__name__)
 # Resend Email API
 RESEND_API_URL = "https://api.resend.com/emails"
 
-# Read secrets/configuration from environment variables
-RESEND_API_KEY = os.environ["RESEND_API_KEY"]
+# Read secrets/configuration from environment variables.
+# Email is OPTIONAL: if RESEND_API_KEY / EMAIL_FROM_ADDRESS are not set,
+# send_email() logs a skip notice instead of crashing the app on import.
+# (Inquiries still persist to MongoDB either way.)
+RESEND_API_KEY = os.environ.get("RESEND_API_KEY", "")
 EMAIL_FROM_NAME = os.environ.get("EMAIL_FROM_NAME", "JiyaAI")
-EMAIL_FROM_ADDRESS = os.environ["EMAIL_FROM_ADDRESS"]
+EMAIL_FROM_ADDRESS = os.environ.get("EMAIL_FROM_ADDRESS", "")
 EMAIL_REPLY_TO = os.environ.get("EMAIL_REPLY_TO")
+
+_EMAIL_ENABLED = bool(RESEND_API_KEY and EMAIL_FROM_ADDRESS)
 
 
 _SHORTENERS = (
@@ -183,6 +188,14 @@ async def send_email(
     html: str,
     reply_to: str | None = None,
 ) -> str | None:
+
+    if not _EMAIL_ENABLED:
+        logger.warning(
+            "Email skipped: RESEND_API_KEY and/or EMAIL_FROM_ADDRESS "
+            "not configured. Set them in backend/.env to enable email "
+            "notifications (inquiry was still saved)."
+        )
+        return None
 
     # Keep existing email security validation
     _assert_safe_email(subject, html)
