@@ -16,7 +16,6 @@ export const NAV_LINKS = [
 ];
 
 export const TEAM_EMAILS = [
-export const TEAM_EMAILS = [
   { id: "info", icon: Info, label: "General Inquiries", email: "info@jiyaitech.com", primary: true },
   { id: "founder", icon: Rocket, label: "Founder · Ashutosh", email: "founder@jiyaitech.com" },
   { id: "sales", icon: Briefcase, label: "Sales & New Projects", email: "sales@jiyaitech.com" },
