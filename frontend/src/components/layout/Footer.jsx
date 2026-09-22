@@ -40,15 +40,23 @@ const Footer = () => {
             <p className="mt-4 text-sm leading-relaxed text-slate-400">
               We build modern digital products powered by software and AI.
             </p>
-            <a
-              href={`mailto:${TEAM_EMAILS[0].email}`}
-              data-testid="footer-email"
-              aria-label={`Email the team: ${TEAM_EMAILS[0].email}`}
-              className="mt-5 block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
-            >
-              <span className="text-slate-500">Email · </span>
-              {TEAM_EMAILS[0].email}
-            </a>
+            <div className="mt-5">
+              <p className="text-sm font-semibold text-slate-500">Email</p>
+              <div className="mt-2 space-y-1.5">
+                {TEAM_EMAILS.map((t) => (
+                  <a
+                    key={t.email}
+                    href={`mailto:${t.email}`}
+                    data-testid={t.primary ? "footer-email" : `footer-email-${t.id}`}
+                    aria-label={`${t.short}: ${t.email}`}
+                    className="block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
+                  >
+                    <span className="text-slate-500">{t.short} · </span>
+                    {t.email}
+                  </a>
+                ))}
+              </div>
+            </div>
             {settings?.contact_phone && (
               <a
                 href={`tel:${settings.contact_phone.replace(/[^+0-9]/g, "")}`}

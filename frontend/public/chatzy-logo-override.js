@@ -1,54 +1,62 @@
 /*
- * JIYA avatar override for the Chatzy chat-widget launcher.
+ * JIYA branding override for the Chatzy chat-widget launcher.
  *
- * The Chatzy widget script renders its floating launcher <img> inside an
- * OPEN shadow DOM attached to #chatzy-shadow-host, and the icon URL comes
- * from Chatzy's API (get_bot_interface -> settings.chatbot_icon_url).
- * Because the shadow root is open, we can watch it and swap the icon for
- * the in-house "JIYA" girl avatar so the launcher matches J1YAI branding.
+ * The Chatzy widget renders its launcher inside an OPEN shadow DOM on
+ * #chatzy-shadow-host. IMPORTANT: the widget attaches the launcher's
+ * click handler INSIDE the <img>'s own `onload` handler, so mutating
+ * that <img> (e.g. swapping its src) re-fires `onload` and stacks a
+ * SECOND click listener — every click then toggles the chat open AND
+ * closed again, which looks like "clicking does nothing".
  *
- * If Chatzy ever changes its DOM, the MutationObserver re-applies the
- * override. To change the icon permanently at the source, upload
- * /images/jiya-avatar.svg in the Chatzy dashboard (Bot Interface settings).
+ * This script therefore NEVER mutates the widget's DOM nodes. It only
+ * injects a stylesheet into the shadow root that paints the launcher
+ * button with the in-house "JIYA" avatar and hides the original <img>
+ * served by Chatzy. All click behaviour is left entirely to the widget.
+ *
+ * To change the icon permanently at the source, upload the same image in
+ * the Chatzy dashboard (Bot Interface settings).
  */
 (function () {
   "use strict";
 
-  var ICON_SRC = "/images/jiya-avatar.svg";
-  var ICON_ALT = "JIYA — J1YAI AI assistant";
-  var MARK = "data-jiya-avatar";
+  var STYLE_ATTR = "data-jiya-style";
+  var JIYA_CSS =
+    ".chatzy-chatbot-icon {" +
+    "background-image: url('/images/jiya-avatar.svg') !important;" +
+    "background-size: cover !important;" +
+    "background-position: center !important;" +
+    "background-repeat: no-repeat !important;" +
+    "}" +
+    ".chatzy-chatbot-icon img { display: none !important; }";
 
-  function applyIcon(img) {
-    if (!img || img.getAttribute(MARK) === "1") return;
-    img.setAttribute(MARK, "1");
-    img.src = ICON_SRC;
-    img.alt = ICON_ALT;
-    img.style.width = "100%";
-    img.style.height = "100%";
-    img.style.objectFit = "cover";
-  }
-
-  function watchShadowRoot(root) {
-    if (!root) return false;
-    var applied = false;
+  function injectStyle(root) {
+    if (!root || root.querySelector("style[" + STYLE_ATTR + "]")) return;
     try {
-      var imgs = root.querySelectorAll(".chatzy-chatbot-icon img");
-      for (var i = 0; i < imgs.length; i++) {
-        applyIcon(imgs[i]);
-        applied = true;
+      var style = document.createElement("style");
+      style.setAttribute(STYLE_ATTR, "1");
+      style.textContent = JIYA_CSS;
+      root.appendChild(style);
+
+      var btn = root.querySelector(".chatzy-chatbot-icon");
+      if (btn && !btn.getAttribute("aria-label")) {
+        btn.setAttribute("aria-label", "Open the JIYA chat assistant");
+        btn.setAttribute("title", "Chat with JIYA");
       }
     } catch (e) {
       /* shadow root not ready yet */
     }
+  }
+
+  function watchShadowRoot(root) {
+    if (!root) return;
+    injectStyle(root);
     try {
       new MutationObserver(function () {
-        var list = root.querySelectorAll(".chatzy-chatbot-icon img");
-        for (var j = 0; j < list.length; j++) applyIcon(list[j]);
+        injectStyle(root);
       }).observe(root, { childList: true, subtree: true });
     } catch (e2) {
       /* ignore */
     }
-    return applied;
   }
 
   function hostReady() {

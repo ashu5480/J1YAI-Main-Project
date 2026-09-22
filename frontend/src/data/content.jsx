@@ -1,7 +1,7 @@
 import {
   Globe, Smartphone, Bot, Workflow, Rocket, Code2,
   Zap, Brain, ShieldCheck, MessagesSquare, Cpu, Handshake,
-  Lightbulb, Sparkles, Repeat, TrendingUp, Layers, Info, Briefcase, LifeBuoy,
+  Lightbulb, Sparkles, Repeat, TrendingUp, Layers, Info, Briefcase, LifeBuoy, Megaphone,
 } from "lucide-react";
 
 export const NAV_LINKS = [
@@ -16,10 +16,11 @@ export const NAV_LINKS = [
 ];
 
 export const TEAM_EMAILS = [
-  { id: "info", icon: Info, label: "General Inquiries", email: "info@jiyaitech.com", primary: true },
-  { id: "founder", icon: Rocket, label: "Founder · Ashutosh", email: "founder@jiyaitech.com" },
-  { id: "sales", icon: Briefcase, label: "Sales & New Projects", email: "sales@jiyaitech.com" },
-  { id: "support", icon: LifeBuoy, label: "Support · Existing Clients", email: "support@jiyaitech.com" },
+  { id: "info", icon: Info, label: "General Inquiries", short: "Info", email: "info@jiyaitech.com", primary: true },
+  { id: "founder", icon: Rocket, label: "Founder · Ashutosh", short: "Founder", email: "founder@jiyaitech.com" },
+  { id: "sales", icon: Briefcase, label: "Sales & New Projects", short: "Sales", email: "sales@jiyaitech.com" },
+  { id: "marketing", icon: Megaphone, label: "Marketing & Partnerships", short: "Marketing", email: "marketing@jiyaitech.com" },
+  { id: "support", icon: LifeBuoy, label: "Support · Existing Clients", short: "Support", email: "support@jiyaitech.com" },
 ];
 
 export const CONTACT_EMAIL = "info@jiyaitech.com";
