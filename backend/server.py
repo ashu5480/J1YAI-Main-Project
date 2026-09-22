@@ -13,9 +13,11 @@ from datetime import datetime, timezone, timedelta
 from html import escape
 import bcrypt
 import jwt
+import hashlib
 import io
 import json
 import zipfile
+from pymongo.errors import DuplicateKeyError
 from fastapi.responses import StreamingResponse
 
 ROOT_DIR = Path(__file__).parent
@@ -31,6 +33,9 @@ JWT_ALGORITHM = "HS256"
 JWT_SECRET = os.environ["JWT_SECRET"]
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:3000")
 OWNER_EMAIL = os.environ["OWNER_EMAIL"]
+# Official info@ mailbox that receives submission notifications
+# (falls back to OWNER_EMAIL when not set).
+INFO_EMAIL = os.environ.get("INFO_EMAIL", OWNER_EMAIL)
 
 app = FastAPI()
 api_router = APIRouter(prefix="/api")
@@ -101,6 +106,8 @@ async def startup():
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await db.blog_posts.create_index("slug", unique=True)
+    # Unique guard for submission dedupe (idempotent email flow).
+    await db.contact_inquiries.create_index("dedupe_key", unique=True, sparse=True)
 
 
 # ---------- Models ----------
@@ -216,17 +223,99 @@ async def create_contact_inquiry(input: ContactInquiryCreate):
     inquiry = ContactInquiry(**input.model_dump())
     doc = inquiry.model_dump()
     doc['timestamp'] = doc['timestamp'].isoformat()
-    await db.contact_inquiries.insert_one(doc)
+
+    # ---------- Idempotency / duplicate protection ----------
+    # A retry of the same API call, or an accidental double-submit from the
+    # frontend, produces the same content within the same 10-minute window.
+    # That combination is stored as a unique `dedupe_key`; the first insert
+    # wins and any repeat is answered with the original record — and never
+    # triggers a second email.
+    now = datetime.now(timezone.utc)
+    bucket = now.replace(minute=(now.minute // 10) * 10, second=0, microsecond=0).strftime("%Y%m%dT%H%M")
+    fingerprint = "|".join([
+        inquiry.email.lower(),
+        inquiry.name.strip().lower(),
+        (inquiry.company or "").strip().lower(),
+        inquiry.project_type.strip().lower(),
+        inquiry.budget.strip().lower(),
+        inquiry.message.strip().lower(),
+    ])
+    doc["dedupe_key"] = hashlib.sha256(f"{bucket}|{fingerprint}".encode("utf-8")).hexdigest()
+
+    logger.info(f"Contact submission received from {inquiry.email} (project_type={inquiry.project_type!r}).")
+
+    try:
+        await db.contact_inquiries.insert_one(doc)
+    except DuplicateKeyError:
+        existing = await db.contact_inquiries.find_one(
+            {"dedupe_key": doc["dedupe_key"]}, {"_id": 0, "id": 1, "timestamp": 1}
+        )
+        existing_id = existing["id"] if existing else None
+        logger.info(
+            f"Duplicate submission ignored (dedupe_key matched, original id={existing_id}). "
+            "No database insert and no email sent."
+        )
+        return {"success": True, "id": existing_id, "duplicate": True}
+
+    logger.info(f"Inquiry {inquiry.id} saved to database. Triggering email notifications.")
+
+    # ---------- 1) Notification to the official info@ mailbox ----------
     try:
         await send_email(
-            to=OWNER_EMAIL,
+            to=INFO_EMAIL,
             subject=f"New inquiry: {inq_safe(inquiry.project_type)} from {inq_safe(inquiry.name)}",
             html=inquiry_email_html(inquiry),
             reply_to=inquiry.email,
         )
     except Exception as e:
-        logger.error(f"Inquiry email notification failed: {e}")
-    return {"success": True, "id": inquiry.id}
+        logger.error(f"Info notification email failed for inquiry {inquiry.id}: {e}")
+
+    # ---------- 2) Confirmation to the founder/submitter's email ----------
+    try:
+        await send_email(
+            to=inquiry.email,
+            subject=f"We received your project inquiry (Ref {inquiry.id[:8]})",
+            html=founder_confirmation_html(inquiry),
+            reply_to=INFO_EMAIL,
+        )
+    except Exception as e:
+        logger.error(f"Founder confirmation email failed for inquiry {inquiry.id}: {e}")
+
+    return {"success": True, "id": inquiry.id, "duplicate": False}
+
+def founder_confirmation_html(inquiry: ContactInquiry) -> str:
+    """Confirmation email sent to the founder/submitter after a successful save."""
+    rows = [
+        ("Reference ID", escape(inquiry.id)),
+        ("Name", escape(inquiry.name)),
+        ("Email", escape(inquiry.email)),
+        ("Company", escape(inquiry.company or "-")),
+        ("Project Type", escape(inquiry.project_type)),
+        ("Budget", escape(inquiry.budget)),
+        ("Submitted", inquiry.timestamp.strftime("%d %b %Y, %H:%M UTC")),
+        ("Message", escape(inquiry.message).replace("\n", "<br>")),
+    ]
+    body = "".join(
+        f'<tr><td style="padding:8px 14px;color:#64748b;font-size:13px;vertical-align:top">{k}</td>'
+        f'<td style="padding:8px 14px;font-size:13px;color:#0f172a">{v}</td></tr>'
+        for k, v in rows
+    )
+    return (
+        '<table role="presentation" width="100%" style="font-family:Arial,sans-serif;background:#f8fafc;padding:24px">'
+        '<tr><td>'
+        '<table role="presentation" width="100%" style="background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;padding:24px">'
+        '<tr><td style="font-size:18px;font-weight:bold;color:#0f172a;padding-bottom:8px">Thanks for reaching out to J1YAI!</td></tr>'
+        f'<tr><td style="font-size:14px;color:#334155;padding-bottom:16px">Hi {escape(inquiry.name.split(" ")[0])}, '
+        'we have received your project inquiry. Our team will review it and get back to you shortly — '
+        'usually within 1–2 business days. Below is a copy of what you submitted for your records.</td></tr>'
+        f'<tr><td><table role="presentation" width="100%" style="border:1px solid #e2e8f0;border-radius:8px">{body}</table></td></tr>'
+        '<tr><td style="font-size:11px;color:#94a3b8;padding-top:14px">'
+        'Please keep the Reference ID for any follow-up. This is an automated confirmation — '
+        'replying to this email reaches the J1YAI team.</td></tr>'
+        '</table>'
+        '</td></tr></table>'
+    )
+
 
 def inq_safe(value: str) -> str:
     return re.sub(r"[\r\n]+", " ", value)[:80]
@@ -348,13 +437,15 @@ EXPORT_EXCLUDE_DIRS = {"node_modules", "__pycache__", ".git", "build", "dist", "
 
 BACKEND_ENV_EXAMPLE = """MONGO_URL="mongodb://localhost:27017"
 DB_NAME="j1yai"
-FRONTEND_URL="http://localhost:3000"
+FRONTEND_URL="http://localhost:6060"
 JWT_SECRET="generate-a-long-random-string-here"
 ADMIN_EMAIL="you@example.com"
 ADMIN_PASSWORD="change-me"
-EMERGENT_EMAIL_KEY=""
+RESEND_API_KEY=""
+EMAIL_FROM_ADDRESS=""
 EMAIL_FROM_NAME="J1YAI"
 EMAIL_REPLY_TO="you@example.com"
+INFO_EMAIL="info@example.com"
 OWNER_EMAIL="you@example.com"
 """
 

@@ -183,26 +183,33 @@ def _assert_safe_email(subject: str, html: str) -> None:
 
 async def send_email(
     *,
-    to: str,
+    to: str | list[str],
     subject: str,
     html: str,
     reply_to: str | None = None,
 ) -> str | None:
 
+    recipients = [to] if isinstance(to, str) else [r for r in to if r]
+    if not recipients:
+        logger.warning("Email skipped: no valid recipient address provided.")
+        return None
+
     if not _EMAIL_ENABLED:
         logger.warning(
-            "Email skipped: RESEND_API_KEY and/or EMAIL_FROM_ADDRESS "
-            "not configured. Set them in backend/.env to enable email "
-            "notifications (inquiry was still saved)."
+            "Email skipped (not configured): would have sent to "
+            f"{recipients}. Set RESEND_API_KEY and EMAIL_FROM_ADDRESS "
+            "to enable real sending."
         )
         return None
+
+    logger.info(f"Email triggered -> to={recipients} subject={subject!r}")
 
     # Keep existing email security validation
     _assert_safe_email(subject, html)
 
     payload = {
         "from": f"{EMAIL_FROM_NAME} <{EMAIL_FROM_ADDRESS}>",
-        "to": [to],
+        "to": recipients,
         "subject": subject,
         "html": html,
     }
@@ -232,13 +239,17 @@ async def send_email(
 
         result = response.json()
 
+        provider_id = result.get("id")
+
         logger.info(
-            f"Email sent successfully to {to}"
+            f"Email sent successfully to {recipients} "
+            f"(provider id={provider_id})"
         )
 
-        return result.get("id")
+        return provider_id
 
     except httpx.HTTPStatusError as error:
+        # Log status + provider message only — never request headers/secrets.
         logger.error(
             "Resend email failed: "
             f"{error.response.status_code} "
@@ -252,7 +263,7 @@ async def send_email(
 
     except Exception as error:
         logger.error(
-            f"Email send error: {str(error)}"
+            f"Email send error: {type(error).__name__}: {error}"
         )
 
         raise HTTPException(
