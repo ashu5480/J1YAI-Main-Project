@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="j1-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b2d9"/>
+      <stop offset="100%" stop-color="#3b82f6"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="84" height="84" rx="18" ry="18" fill="url(#j1-gradient)"/>
+  <text x="50" y="62" font-family="Inter, system-ui, sans-serif" font-weight="800" font-size="44" text-anchor="middle" fill="#0f172a">J1</text>
+</svg>
