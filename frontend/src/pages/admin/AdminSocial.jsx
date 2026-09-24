@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 
 const FIELDS = [
   { key: "contact_email", label: "Contact Email", placeholder: "info@jiyaitech.com" },
-  { key: "contact_phone", label: "Contact Phone", placeholder: "+91 70000 00000" },
+  { key: "contact_phone", label: "Contact Phone", placeholder: "+91 96255 25675" },
   { key: "social_linkedin", label: "LinkedIn URL", placeholder: "https://www.linkedin.com/company/…" },
   { key: "social_instagram", label: "Instagram URL", placeholder: "https://www.instagram.com/…" },
   { key: "social_github", label: "GitHub URL", placeholder: "https://github.com/…" },

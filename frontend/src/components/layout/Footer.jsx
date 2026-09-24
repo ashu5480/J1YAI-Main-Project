@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { Linkedin, Instagram, Github, ArrowRight } from "lucide-react";
 import { Logo } from "@/components/layout/Navbar";
-import { TEAM_EMAILS } from "@/data/content";
+import { TEAM_EMAILS, CONTACT_PHONE, CONTACT_PHONE_DISPLAY, WHATSAPP_URL } from "@/data/content";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 
@@ -57,16 +57,27 @@ const Footer = () => {
                 ))}
               </div>
             </div>
-            {settings?.contact_phone && (
-              <a
-                href={`tel:${settings.contact_phone.replace(/[^+0-9]/g, "")}`}
-                data-testid="footer-phone"
-                className="mt-5 block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
-              >
-                <span className="text-slate-500">Call / WhatsApp · </span>
-                {settings.contact_phone}
-              </a>
-            )}
+            <div className="mt-5" data-testid="footer-contact">
+              <p className="text-sm font-semibold text-slate-500">Call / WhatsApp</p>
+              <div className="mt-2 space-y-1.5">
+                <a
+                  href={`tel:${CONTACT_PHONE}`}
+                  data-testid="footer-phone"
+                  className="block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
+                >
+                  Call · {CONTACT_PHONE_DISPLAY}
+                </a>
+                <a
+                  href={WHATSAPP_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid="footer-whatsapp"
+                  className="block w-fit text-sm text-slate-300 transition-colors duration-200 hover:text-cyan-300"
+                >
+                  WhatsApp · {CONTACT_PHONE_DISPLAY}
+                </a>
+              </div>
+            </div>
             {socials.length > 0 && (
               <div className="mt-6 flex gap-3">
                 {socials.map((s) => (

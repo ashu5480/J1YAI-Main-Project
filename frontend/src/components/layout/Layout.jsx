@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import FloatingContactActions from "@/components/FloatingContactActions";
 
 const ScrollManager = () => {
   const { pathname, hash } = useLocation();
@@ -35,6 +36,7 @@ const Layout = () => (
       <Outlet />
     </main>
     <Footer />
+    <FloatingContactActions />
   </div>
 );
 

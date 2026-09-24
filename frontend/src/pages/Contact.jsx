@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Mail, CalendarCheck, MessageSquare, CheckCircle2, Loader2 } from "lucide-react";
+import { Mail, CalendarCheck, MessageSquare, MessageCircle, Phone, CheckCircle2, Loader2 } from "lucide-react";
 import { SEO } from "@/components/layout/Layout";
 import { Reveal, SectionHeading } from "@/components/Reveal";
 import { Input } from "@/components/ui/input";
@@ -9,7 +9,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PROJECT_TYPES, BUDGETS, TEAM_EMAILS } from "@/data/content";
+import {
+  PROJECT_TYPES,
+  BUDGETS,
+  TEAM_EMAILS,
+  CONTACT_PHONE,
+  CONTACT_PHONE_DISPLAY,
+  WHATSAPP_URL,
+} from "@/data/content";
 
 const API = `${process.env.REACT_APP_BACKEND_URL || ""}/api`;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -116,9 +123,33 @@ const Contact = () => {
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-6">
                   <p className="text-sm text-slate-400">Prefer to talk?</p>
-                  <a href="tel:+917042579843" data-testid="contact-phone-link" className="mt-1 block font-display text-lg font-semibold text-cyan-300 hover:text-cyan-200">
-                    +91 70425 79843
+                  <a
+                    href={`tel:${CONTACT_PHONE}`}
+                    data-testid="contact-phone-link"
+                    className="mt-1 block font-display text-lg font-semibold text-cyan-300 hover:text-cyan-200"
+                  >
+                    {CONTACT_PHONE_DISPLAY}
                   </a>
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                    <a
+                      href={WHATSAPP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-testid="contact-whatsapp-link"
+                      className="inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-3 text-sm font-semibold text-white transition-[background-color,transform] duration-200 hover:bg-emerald-400 hover:-translate-y-0.5"
+                    >
+                      <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                      WhatsApp
+                    </a>
+                    <a
+                      href={`tel:${CONTACT_PHONE}`}
+                      data-testid="contact-call-link"
+                      className="inline-flex items-center justify-center gap-2 rounded-full border border-cyan-400/40 px-4 py-3 text-sm font-semibold text-cyan-300 transition-[background-color,transform] duration-200 hover:bg-cyan-400/10 hover:-translate-y-0.5"
+                    >
+                      <Phone className="h-4 w-4" aria-hidden="true" />
+                      Call Now
+                    </a>
+                  </div>
                   <p className="mt-3 text-xs text-slate-500">Mon–Sat · 10am–7pm IST · WhatsApp friendly.</p>
                 </div>
               </div>

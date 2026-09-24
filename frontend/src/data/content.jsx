@@ -24,6 +24,9 @@ export const TEAM_EMAILS = [
 ];
 
 export const CONTACT_EMAIL = "info@jiyaitech.com";
+export const CONTACT_PHONE = "+919625525675";
+export const CONTACT_PHONE_DISPLAY = "+91 96255 25675";
+export const WHATSAPP_URL = "https://wa.me/919625525675";
 
 export const SERVICES = [
   {
@@ -139,7 +142,7 @@ export const PROJECTS = [
     description:
       "MobChecker Mobile Solutions is a doorstep mobile phone repair service that helps customers diagnose issues and book repairs for screens, batteries, charging ports, water damage and motherboard problems.",
     tags: ["HTML5", "CSS3", "JavaScript", "Responsive UI", "WhatsApp"],
-    liveUrl: "https://6ab4d485099fbf418fa810eb--mobchecker.netlify.app/",
+    liveUrl: "https://6ab4e79e555a622b4d128962--mobchecker.netlify.app/",
     overview:
       "MobChecker Mobile Solutions is a customer-facing web app for a Faridabad-based doorstep mobile repair service. It makes the repair journey easy to understand from the first symptom to the repair request.",
     problem:

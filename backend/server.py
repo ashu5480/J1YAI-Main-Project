@@ -103,6 +103,11 @@ async def seed_admin():
 @app.on_event("startup")
 async def startup():
     await seed_admin()
+    # Migrate the previous public phone to J1YAI's current WhatsApp/call number.
+    await db.site_settings.update_one(
+        {"key": "site", "contact_phone": "+91 7042579843"},
+        {"$set": {"contact_phone": DEFAULT_SETTINGS["contact_phone"]}},
+    )
     await db.users.create_index("email", unique=True)
     await db.login_attempts.create_index("identifier")
     await db.blog_posts.create_index("slug", unique=True)
@@ -164,7 +169,7 @@ DEFAULT_SETTINGS = {
     # Public-facing contact mailbox shown on the website UI (info@jiyaitech.com).
     # OWNER_EMAIL (env) remains the private notification target for inquiries.
     "contact_email": "info@jiyaitech.com",
-    "contact_phone": "+91 7042579843",
+    "contact_phone": "+91 96255 25675",
     "social_linkedin": "https://www.linkedin.com",
     "social_instagram": "https://www.instagram.com",
     "social_github": "https://github.com",
