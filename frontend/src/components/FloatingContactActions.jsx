@@ -11,7 +11,7 @@ const tooltipClass =
 const FloatingContactActions = () => (
   <aside
     aria-label="Contact J1YAI"
-    className="fixed bottom-5 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-7 sm:right-6"
+    className="fixed bottom-28 right-4 z-40 flex flex-col items-end gap-3 sm:bottom-7 sm:right-6"
   >
     <a
       href={WHATSAPP_URL}

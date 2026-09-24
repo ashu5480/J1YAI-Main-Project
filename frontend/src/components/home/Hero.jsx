@@ -30,7 +30,7 @@ const Hero = () => (
           Turn Your Ideas Into <span className="text-gradient">Powerful Digital Products.</span>
         </h1>
         <p className="mt-6 max-w-xl text-base leading-relaxed text-slate-400 md:text-lg">
-          We design and build web apps, mobile apps, AI agents, chatbots, SaaS platforms and custom software that help businesses move faster.
+          We design and build web apps, mobile apps, AI agents, chatbots, SaaS platforms and custom software — with QA testing that helps businesses move faster.
         </p>
         <div className="mt-9 flex flex-col gap-4 sm:flex-row">
           <Link

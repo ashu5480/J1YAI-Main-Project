@@ -12,7 +12,7 @@ import CTASection from "@/components/CTASection";
 import { Reveal, SectionHeading } from "@/components/Reveal";
 import { SERVICES, WHY_US, PROJECTS, SOLUTIONS, PROCESS_STEPS } from "@/data/content";
 
-const SPANS = ["lg:col-span-7", "lg:col-span-5", "lg:col-span-5", "lg:col-span-7", "lg:col-span-6", "lg:col-span-6"];
+const SPANS = ["lg:col-span-7", "lg:col-span-5", "lg:col-span-12", "lg:col-span-5", "lg:col-span-7", "lg:col-span-6", "lg:col-span-6"];
 
 const Home = () => {
   const [modalProject, setModalProject] = useState(null);
@@ -21,7 +21,7 @@ const Home = () => {
     <>
       <SEO
         title="Build Digital Products With AI | J1YAI"
-        description="We build web apps, mobile apps, AI chatbots, AI agents, SaaS platforms and custom software for ambitious startups and businesses."
+        description="We build web apps, mobile apps, AI chatbots, AI agents, SaaS platforms, custom software and quality-tested digital products for ambitious startups and businesses."
       />
       <Hero />
       <TrustBar />

@@ -27,10 +27,31 @@ const Navbar = () => {
 
   useEffect(() => setOpen(false), [location.pathname]);
 
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.classList.add("j1yai-mobile-menu-open");
+    document.body.style.overflow = "hidden";
+    window.dispatchEvent(new CustomEvent("j1yai-mobile-menu-change", { detail: { open: true } }));
+
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = previousOverflow;
+      document.body.classList.remove("j1yai-mobile-menu-open");
+      window.dispatchEvent(new CustomEvent("j1yai-mobile-menu-change", { detail: { open: false } }));
+    };
+  }, [open]);
+
   return (
     <header
       data-testid="navbar"
-      className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-[background-color,border-color] duration-300 ${
+      className={`sticky top-0 z-[60] border-b backdrop-blur-xl transition-[background-color,border-color] duration-300 ${
         scrolled ? "border-white/10 bg-gray-950/85" : "border-white/5 bg-gray-950/60"
       }`}
     >
@@ -66,6 +87,7 @@ const Navbar = () => {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
+            aria-controls="mobile-navigation"
             className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 text-slate-200 lg:hidden"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -76,18 +98,22 @@ const Navbar = () => {
       <AnimatePresence>
         {open && (
           <motion.div
+            id="mobile-navigation"
+            role="dialog"
+            aria-label="Mobile navigation"
             data-testid="mobile-drawer"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="glass overflow-hidden border-t border-white/10 lg:hidden"
+            className="glass max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t border-white/10 lg:hidden"
           >
             <div className="space-y-1 px-5 py-5">
               {NAV_LINKS.map((l, i) => (
                 <motion.div key={l.to} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.05 * i }}>
                   <NavLink
                     to={l.to}
+                    onClick={() => setOpen(false)}
                     data-testid={`mobile-nav-link-${l.label.toLowerCase()}`}
                     className={({ isActive }) =>
                       `block rounded-lg px-4 py-3 text-base font-medium ${isActive ? "bg-white/5 text-cyan-300" : "text-slate-300"}`
@@ -99,6 +125,7 @@ const Navbar = () => {
               ))}
               <Link
                 to="/contact"
+                onClick={() => setOpen(false)}
                 data-testid="mobile-nav-cta"
                 className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-cyan-400 px-5 py-3.5 text-base font-semibold text-slate-950"
               >

@@ -17,8 +17,8 @@ const DetailBlock = ({ icon: Icon, title, children }) => (
 const Services = () => (
   <>
     <SEO
-      title="Services — Web, Mobile, AI & SaaS Development | J1YAI"
-      description="Web applications, mobile apps, AI chatbots, AI agents, SaaS platforms and custom software — designed, built and shipped by J1YAI."
+      title="Services — Web, Mobile, AI, QA & SaaS Development | J1YAI"
+      description="Web applications, mobile apps, QA testing, AI chatbots, AI agents, SaaS platforms and custom software — designed, built and shipped by J1YAI."
     />
     <section className="relative overflow-hidden border-b border-white/5">
       <div className="pointer-events-none absolute inset-0 bg-grid opacity-70" aria-hidden="true" />
@@ -27,7 +27,7 @@ const Services = () => (
           testid="services-heading"
           eyebrow="Services"
           title="Everything You Need To Ship"
-          subtitle="From your first idea to a production-ready product — strategy, design, engineering, AI and cloud, under one roof."
+          subtitle="From your first idea to a production-ready product — strategy, design, engineering, QA, AI and cloud, under one roof."
         />
       </div>
     </section>

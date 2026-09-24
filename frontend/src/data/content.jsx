@@ -52,6 +52,17 @@ export const SERVICES = [
     tech: ["React Native", "Expo", "TypeScript", "Firebase", "Node.js"],
   },
   {
+    id: "qa-testing",
+    icon: ShieldCheck,
+    title: "QA Testing & Quality Assurance",
+    tagline: "Catch bugs before your users do with structured testing across web, mobile, APIs and releases.",
+    examples: ["Functional testing", "Regression testing", "API testing", "Cross-device testing", "Release QA"],
+    cta: "Improve Product Quality",
+    whoFor: "Teams shipping web or mobile products that need confidence before launch and a repeatable quality process after release.",
+    features: ["Test strategy and acceptance criteria", "Manual and automated test coverage", "Cross-browser and device checks", "Bug reporting and release validation", "Post-launch regression testing"],
+    tech: ["Manual QA", "Automated testing", "API testing", "Cross-device testing", "CI/CD checks"],
+  },
+  {
     id: "chatbots",
     icon: Bot,
     title: "AI Chatbots",
@@ -228,7 +239,7 @@ export const TECH_STACK = [
 
 export const PROJECT_TYPES = [
   "Web Application", "Mobile Application", "AI Chatbot", "AI Agent",
-  "SaaS", "Automation", "Custom Software", "Other",
+  "SaaS", "Automation", "QA Testing", "Custom Software", "Other",
 ];
 
 export const BUDGETS = ["Under $1,000", "$1,000 – $5,000", "$5,000 – $10,000", "$10,000+"];
