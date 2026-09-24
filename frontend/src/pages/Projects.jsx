@@ -9,13 +9,15 @@ import { PROJECTS } from "@/data/content";
 
 const Projects = () => {
   const [modalProject, setModalProject] = useState(null);
-  const [featured, ...concepts] = PROJECTS;
+  const [featured, ...projects] = PROJECTS;
+  const clientProjects = projects.filter((project) => project.status === "live");
+  const concepts = projects.filter((project) => project.status !== "live");
 
   return (
     <>
       <SEO
         title="Projects — Products We've Built | J1YAI"
-        description="Real products, real technology. Explore FundrHub — our live founder-investor platform — and the concepts we're building next."
+        description="Explore FundrHub, our live founder-investor platform, and MobChecker Mobile Solutions, a live client project for doorstep mobile repairs."
       />
       <section className="relative overflow-hidden border-b border-white/5">
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-70" aria-hidden="true" />
@@ -31,6 +33,24 @@ const Projects = () => {
 
       <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8" data-testid="projects-list">
         <FeaturedProject project={featured} onOpen={setModalProject} />
+
+        <Reveal className="mt-20">
+          <h2 className="font-display text-2xl font-semibold tracking-tight text-slate-50" data-testid="client-projects-heading">
+            Client Work
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-400">
+            Live products built for real customers. Explore the work we have designed, developed and shipped.
+          </p>
+        </Reveal>
+        {clientProjects.length > 0 && (
+          <div className="mt-10 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {clientProjects.map((project, i) => (
+              <Reveal key={project.id} delay={0.05 * i}>
+                <ProjectCard project={project} onOpen={setModalProject} />
+              </Reveal>
+            ))}
+          </div>
+        )}
 
         <Reveal className="mt-20">
           <h2 className="font-display text-2xl font-semibold tracking-tight text-slate-50" data-testid="concepts-heading">

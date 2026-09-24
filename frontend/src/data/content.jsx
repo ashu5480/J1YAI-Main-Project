@@ -130,6 +130,32 @@ export const PROJECTS = [
     ],
   },
   {
+    id: "mobchecker",
+    name: "MobChecker Mobile Solutions",
+    category: "Mobile Repair / Web Application",
+    badge: "Live Demo",
+    label: "Client Project",
+    status: "live",
+    description:
+      "MobChecker Mobile Solutions is a doorstep mobile phone repair service that helps customers diagnose issues and book repairs for screens, batteries, charging ports, water damage and motherboard problems.",
+    tags: ["HTML5", "CSS3", "JavaScript", "Responsive UI", "WhatsApp"],
+    liveUrl: "https://6ab4d485099fbf418fa810eb--mobchecker.netlify.app/",
+    overview:
+      "MobChecker Mobile Solutions is a customer-facing web app for a Faridabad-based doorstep mobile repair service. It makes the repair journey easy to understand from the first symptom to the repair request.",
+    problem:
+      "Customers need a clear way to identify a phone problem, understand the available repair service and request doorstep support without visiting a shop.",
+    solution:
+      "A responsive, interactive web experience that combines service information, brand coverage, a guided repair checker and WhatsApp-based booking for a fast path from diagnosis to repair.",
+    features: [
+      "Guided device and problem checker",
+      "Doorstep repair booking through WhatsApp",
+      "Screen, battery, charging port, water-damage and motherboard repair information",
+      "Responsive, branded web experience",
+      "Live Netlify deployment",
+    ],
+  },
+
+  {
     id: "ai-support",
     name: "AI Support Assistant",
     category: "AI / Chatbot",
