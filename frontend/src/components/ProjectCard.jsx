@@ -1,6 +1,12 @@
-import { Bot, BarChart3, Workflow, Smartphone, ArrowRight, ArrowUpRight } from "lucide-react";
+import { Bot, BarChart3, Workflow, Smartphone, ShoppingBag, ArrowRight, ArrowUpRight } from "lucide-react";
 
-const ICONS = { "ai-support": Bot, "smart-dashboard": BarChart3, "ai-automation": Workflow, mobchecker: Smartphone };
+const ICONS = {
+  "ai-support": Bot,
+  "smart-dashboard": BarChart3,
+  "ai-automation": Workflow,
+  mobchecker: Smartphone,
+  "mobile-expert-x": ShoppingBag,
+};
 
 const ProjectCard = ({ project, onOpen }) => {
   const Icon = ICONS[project.id] || Bot;

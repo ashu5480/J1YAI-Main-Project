@@ -6,6 +6,7 @@ import Hero from "@/components/home/Hero";
 import TrustBar from "@/components/home/TrustBar";
 import ServiceCard from "@/components/ServiceCard";
 import FeaturedProject from "@/components/FeaturedProject";
+import ProjectCard from "@/components/ProjectCard";
 import ProjectModal from "@/components/ProjectModal";
 import TechStack from "@/components/TechStack";
 import CTASection from "@/components/CTASection";
@@ -16,6 +17,8 @@ const SPANS = ["lg:col-span-7", "lg:col-span-5", "lg:col-span-12", "lg:col-span-
 
 const Home = () => {
   const [modalProject, setModalProject] = useState(null);
+  const [featured, ...restProjects] = PROJECTS;
+  const clientProjects = restProjects.filter((project) => project.status === "live");
 
   return (
     <>
@@ -72,8 +75,25 @@ const Home = () => {
           subtitle="Real products. Real technology. Built to solve real problems."
         />
         <div className="mt-14">
-          <FeaturedProject project={PROJECTS[0]} onOpen={setModalProject} />
+          <FeaturedProject project={featured} onOpen={setModalProject} />
         </div>
+        {clientProjects.length > 0 && (
+          <>
+            <Reveal className="mt-16">
+              <h3 className="font-display text-xl font-semibold tracking-tight text-slate-50">Client Work</h3>
+              <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-400">
+                Live products built for real customers — including MobilExpertX and MobChecker Mobile Solutions.
+              </p>
+            </Reveal>
+            <div className="mt-8 grid gap-8 md:grid-cols-2">
+              {clientProjects.map((project, i) => (
+                <Reveal key={project.id} delay={0.05 * i}>
+                  <ProjectCard project={project} onOpen={setModalProject} />
+                </Reveal>
+              ))}
+            </div>
+          </>
+        )}
         <Reveal className="mt-8">
           <Link
             to="/projects"

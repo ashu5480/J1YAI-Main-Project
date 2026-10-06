@@ -168,6 +168,31 @@ export const PROJECTS = [
       "Live Netlify deployment",
     ],
   },
+  {
+    id: "mobile-expert-x",
+    name: "MobilExpertX",
+    category: "Mobile Commerce / Web Application",
+    badge: "Live Demo",
+    label: "Client Project",
+    status: "live",
+    description:
+      "MobilExpertX is a full-stack mobile retail experience for buying premium smartphones, selling trade-ins, booking expert repairs, and shopping genuine accessories — with verified devices and transparent pricing.",
+    tags: ["React", "Next.js", "E-commerce", "Responsive UI", "Vercel"],
+    liveUrl: "https://mobile-expert-x.vercel.app/",
+    overview:
+      "MobilExpertX is a customer-facing platform for a mobile specialist brand — unifying shop, sell-your-phone valuation, repair booking, and accessories in one polished web experience.",
+    problem:
+      "Phone buyers and sellers juggle fragmented sites for pricing, repairs, and accessories, with little trust in refurbished quality or trade-in quotes.",
+    solution:
+      "A single destination with curated new and Grade-A refurbished inventory, instant trade-in estimates, upfront repair pricing, and PCI-ready checkout patterns — deployed live on Vercel.",
+    features: [
+      "Shop new and refurbished phones with clear specs and offers",
+      "Instant sell-your-phone valuation flow",
+      "Repair services with upfront quotes and booking paths",
+      "Accessories catalog and upgrade / trade-in examples",
+      "WhatsApp and phone support integration",
+    ],
+  },
 
   {
     id: "ai-support",

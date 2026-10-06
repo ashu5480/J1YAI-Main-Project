@@ -17,7 +17,7 @@ const Projects = () => {
     <>
       <SEO
         title="Projects — Products We've Built | J1YAI"
-        description="Explore FundrHub, our live founder-investor platform, and MobChecker Mobile Solutions, a live client project for doorstep mobile repairs."
+        description="Explore FundrHub, MobChecker Mobile Solutions, and MobilExpertX — live products we've built for founders and mobile retail clients."
       />
       <section className="relative overflow-hidden border-b border-white/5">
         <div className="pointer-events-none absolute inset-0 bg-grid opacity-70" aria-hidden="true" />
